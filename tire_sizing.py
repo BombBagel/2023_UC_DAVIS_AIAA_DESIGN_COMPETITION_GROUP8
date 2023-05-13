@@ -8,7 +8,6 @@ import sys
 # H, x_nose, x_main, FWD_cg, AFT_cg all must be in the same units of distance
 # aircraft_type (1 = general aviation and 2 = transport/bomber)
 # margin (1 = FAR 25 requirement, 2 = common practice and is stricter than FAR)
-
 def calc_tire(W_static,V_stall,nose_num,main_num,H,x_nose,x_main,FWD_cg,AFT_cg,aircraft_type,margin):
     # gravitational acceleration
     g = 32.17 # ft/s^2
@@ -90,7 +89,7 @@ def calc_tire(W_static,V_stall,nose_num,main_num,H,x_nose,x_main,FWD_cg,AFT_cg,a
 
 
 # example
-'''W_static = 79110 # lbf
+W_static = 79110 # lbf
 V_stall = 238 # ft/s
 nose_num = 2
 main_num = 4
@@ -107,4 +106,4 @@ print('dia_main = {} [in]'.format(dia_main))
 print('width_main = {} [in]'.format(width_main))
 print('dia_nose = {} [in]'.format(dia_nose))
 print('width_nose = {} [in]'.format(width_nose))
-print('KE_braking = {} x 10^6 [ft-lbf]'.format(KE_braking/10**6))'''
+print('KE_braking = {} x 10^6 [ft-lbf]'.format(KE_braking/10**6))

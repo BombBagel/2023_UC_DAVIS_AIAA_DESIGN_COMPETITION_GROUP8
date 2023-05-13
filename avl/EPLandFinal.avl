@@ -1,0 +1,339 @@
+EcoProp
+
+#Mach
+0.21326
+
+#IYsym   IZsym   Zsym
+ 0       0       0.0
+
+#Sref    Cref    Bref
+730   8.40071    97.49664
+
+#Xref    Yref    Zref
+60.0     0.0     0.0
+
+
+
+
+#-----------------------------------------------------
+#------------------- MAIN WING -----------------------
+#-----------------------------------------------------
+SURFACE 
+Wing 
+!Nchordwise  Cspace  Nspanwise  Sspace
+5           1.0     5         1
+
+COMPONENT 
+1
+
+YDUPLICATE 
+0.0
+
+ANGLE
+0.0
+
+SCALE
+1.0   1.0   1.0
+
+TRANSLATE
+29.000  0.0   4.250
+
+#--------- SECTION 1 [Wing Root]----------------------------------
+SECTION
+#Xle     Yle      Zle       Chord     Ainc
+0        0        0         12.26085 5
+AFILE
+a1.dat
+
+#--------- SECTION 2 ----------------------------------
+SECTION
+#Xle     Yle      Zle       Chord     Ainc
+0        4.306    0.009     12.26085  4
+AFILE
+a1.dat
+
+#--------- SECTION 3 ----------------------------------
+SECTION
+#Xle     Yle      Zle       Chord     Ainc
+2.108    9.726    0.197     10.952    3
+AFILE
+a1.dat
+
+
+#-----------------------------------------------------
+#------------ MAIN WING FLAP SECTION -----------------
+#-----------------------------------------------------
+SURFACE 
+Wing 
+!Nchordwise  Cspace  Nspanwise  Sspace
+5           1.0     20         1
+
+COMPONENT 
+1
+
+YDUPLICATE 
+0.0
+
+ANGLE
+0.0
+
+SCALE
+1.0   1.0   1.0
+
+TRANSLATE
+29.000  0.0   4.250
+
+#--------- SECTION 3 ----------------------------------
+SECTION
+#Xle     Yle      Zle       Chord     Ainc
+2.108     9.726    0.197   11.160328944   3
+AFILE
+a1.dat
+
+CONTROL
+flap   1.0     0.737861988    0. 1. 0.   1.0 
+
+#--------- SECTION 4 ----------------------------------
+SECTION
+#Xle     Yle      Zle       Chord     Ainc
+10.538   31.4047   0.951    5.82359863758   2 
+AFILE
+a1.dat
+CONTROL
+flap   1.0     0.737861988    0. 1. 0.   1.0 
+
+
+
+#-----------------------------------------------------
+#------------------- MAIN WING -----------------------
+#-----------------------------------------------------
+SURFACE 
+Wing 
+!Nchordwise  Cspace  Nspanwise  Sspace
+5           1.0     20         1
+
+COMPONENT 
+1
+
+YDUPLICATE 
+0.0
+
+ANGLE
+0.0
+
+SCALE
+1.0   1.0   1.0
+
+TRANSLATE
+29.000  0.0   4.250
+
+#--------- SECTION 4 ----------------------------------
+SECTION
+#Xle     Yle      Zle       Chord     Ainc
+10.538   31.4047  0.951     5.71489   2 
+AFILE
+a1.dat
+
+#--------- SECTION 5 ----------------------------------
+SECTION
+#Xle     Yle      Zle       Chord     Ainc
+12.178   34.867   1.17      4.931     1
+AFILE
+a1.dat
+CONTROL
+#Cname   Cgain   Xhinge   HingeVec   SgnDup
+aileron  1.0     0.65     0. 1. 0.   -1.0
+
+#--------- SECTION 6 ----------------------------------
+SECTION
+#Xle     Yle      Zle       Chord     Ainc
+17.008   45.258   1.49      2.897    0  
+AFILE
+a1.dat
+CONTROL
+#Cname   Cgain   Xhinge   HingeVec   SgnDup
+aileron  1.0     0.65     0. 1. 0.   -1.0
+
+#--------- SECTION 7 ----------------------------------
+SECTION
+#Xle Yle Zle Chord Ainc
+18.606 48.721 1.554 2.19194 0
+AFILE
+a1.dat
+
+
+#--------- SECTION 8 [WINGLET] ----------------------------------
+SECTION
+#Xle Yle Zle Chord Ainc
+22.106   49.329   5.002   0.5  0
+
+
+
+
+
+
+
+#-----------------------------------------------------
+#---------------- HORIZONTAL TAIL --------------------
+#-----------------------------------------------------
+SURFACE
+H-Stab 
+#Nchordwise  Cspace  Nspanwise  Sspace
+6            1.0     10         1
+
+COMPONENT
+1
+
+YDUPLICATE 
+0.0
+
+SCALE
+1.0  1.0  1.0
+
+TRANSLATE 
+ 74.215    0.000    16.886
+
+#--------- START SECTION 1 ----------------------------
+SECTION
+#Xle    Yle    Zle     Chord     Ainc  Nspanwise  Sspace
+0.0     0.0    0.0    9.52376  0  
+
+NACA
+0012
+
+#--------- SECTION 2 ----------------------------------
+SECTION
+#Xle    Yle    Zle     Chord    Ainc  Nspanwise  Sspace
+1.651   2.86   0.000   8.363    0
+
+NACA
+0012
+
+CONTROL
+#Cname   Cgain   Xhinge   HingeVec   SgnDup
+elevator  1.0     0.5    0. 0. 0.    1
+
+#--------- SECTION 3 ----------------------------------
+SECTION
+#Xle    Yle    Zle     Chord    Ainc  Nspanwise  Sspace
+6.605   11.44  0.0     4.880    0
+
+NACA
+0012
+
+CONTROL
+#Cname   Cgain   Xhinge   HingeVec   SgnDup
+elevator  1.0     0.5    0. 0. 0.    1
+
+NACA
+0012
+
+
+#--------- END SECTION 4 ------------------------------
+SECTION
+#Xle    Yle    Zle     Chord   Ainc  Nspanwise  Sspace
+8.256   14.300    0     3.72406   0
+
+NACA
+0012
+
+
+
+#-----------------------------------------------------
+#----------------- VERTICAL TAIL ---------------------
+#-----------------------------------------------------
+SURFACE
+V-Stab
+#Nchordwise  Cspace   Nspanwise  Sspace
+7            1.0      11          1.0
+
+COMPONENT
+1
+
+SCALE
+1.0   1.0  1.0
+
+TRANSLATE
+61.630  0.0   4.338
+
+#--------- START SECTION 1 ---------------------------
+SECTION
+#Xle    Yle    Zle     Chord    Ainc  Nspanwise  Sspace
+ 0.0    0.0    0.0     19.38707     0.    
+
+NACA 
+0008
+
+#--------- SECTION 2 ----------------------------------
+SECTION
+#Xle    Yle    Zle     Chord   Ainc  Nspanwise  Sspace
+6.704    0.0     2.370    13.21845    0.  
+
+NACA 
+0008
+
+CONTROL
+rudder  1.0  0.70   0. 0. 1.  1
+#--------- SECTION 3 ----------------------------------
+SECTION
+#Xle    Yle    Zle     Chord   Ainc  Nspanwise  Sspace
+9.11    0.0    5.198     11.45599    0.  
+
+NACA 
+0008
+
+CONTROL
+rudder  1.0  0.70   0. 0. 1.  1
+
+#--------- SECTION 4 ----------------------------------
+SECTION
+#Xle    Yle    Zle     Chord   Ainc  Nspanwise  Sspace
+11.89    0    11.078     9.90773    0.
+
+NACA 
+0008
+
+CONTROL
+rudder  1.0  0.70   0. 0. 1.  1
+#--------- END SECTION 5 ------------------------------
+SECTION
+#Xle    Yle    Zle     Chord   Ainc  Nspanwise  Sspace
+12.585    0.0    12.548     9.35253    0.  
+
+
+#-----------------------------------------------------
+#--------------------- FUSELAGE ----------------------
+#-----------------------------------------------------
+SURFACE
+H-Stab 
+#Nchordwise  Cspace  Nspanwise  Sspace
+20            1.0     10         1
+
+COMPONENT
+1
+
+YDUPLICATE 
+0.0
+
+SCALE
+1.0  1.0  1.0
+
+TRANSLATE 
+ 0    0   0
+
+#--------- START SECTION 1 ----------------------------
+SECTION
+#Xle    Yle    Zle     Chord     Ainc  Nspanwise  Sspace
+0.0     0.0    0.0     83  0.  
+
+SECTION
+#Xle    Yle    Zle     Chord   Ainc  Nspanwise  Sspace
+2.312   2.25   0   74.583  0 
+
+SECTION
+#Xle    Yle    Zle     Chord   Ainc  Nspanwise  Sspace
+7.055 4 0 61.726  0
+
+SECTION
+#Xle    Yle    Zle     Chord   Ainc  Nspanwise  Sspace
+11.57 4.55 0 47.568  0

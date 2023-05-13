@@ -26,9 +26,9 @@ def getempennage(c_root,c_tip,b_w,S_w,L_ht,L_vt):
     cbar_w = (2/3)*c_root*(1+lam+lam**2)/(1+lam)
     S_ht = c_ht*cbar_w*S_w/L_ht # horizontal tail area
     S_vt = c_vt*b_w*S_w/L_vt # vertical tail area
-    return lam,S_ht,S_vt,cbar_w
+    return S_ht,S_vt, cbar_w
 
-'''# airplane parameters
+""" # airplane parameters
 c_root = 18.39660 # [ft] chord of the root of the wing
 c_tip = 3.17520
 b_w = 99.27966 # [ft] wing span
@@ -36,8 +36,7 @@ S_w = 922.97191 # [ft^2] wing area
 L_ht = 46.916 # [ft] distance from wing aerodynamic center to horizontal tail aerodynamic center
 L_vt = 39.899 # [ft] distance from wing aerodynamic center to vertical tail aerodynamic center
 
-lam,S_ht,S_vt,cbar_w = getempennage(c_root,c_tip,b_w,S_w,L_ht,L_vt)
+lam,S_ht,S_vt = getempennage(c_root,c_tip,b_w,S_w,L_ht,L_vt)
 print('taper ratio = {}'.format(lam))
 print('S_ht = {} [ft^2]'.format(S_ht))
-print('S_vt = {} [ft^2]'.format(S_vt))
-print('cbar_w = {} [ft]'.format(cbar_w))'''
+print('S_vt = {} [ft^2]'.format(S_vt)) """

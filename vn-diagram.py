@@ -9,7 +9,7 @@ import warnings
 W_min and W_max are weights of plane [lbf] or [slug-ft/s^2]
 rho_SL and rho_c are density of air at sea level and cruise [slugs/ft^3]
 S_ref is wing area [ft^2]
-CL_max, CL_min, and CL_alpha [degree^-1] are values based on cruise condition
+CL_max, CL_min, and CL_alpha [rad^-1] are values based on cruise condition
 V_cruise is cruise speed [ft/s]
 c_ is mean aerodynamic chord [ft]
 h_c is cruise altitude [ft]'''
@@ -40,20 +40,16 @@ def vn_diagram(W_min,W_max,rho_SL,rho_c,S_ref,CL_max,CL_min,CL_alpha,V_cruise,c_
         return x*scale,y*scale
 
     def create_gust_line(CL_alpha,U_de,W,S_ref,rho,V_max,opt):
-        ftpsectoknot = 1/1.688 # knots/ft-s^-1
         g = 32.1740 # ft/s^2
-        degreetorad = np.pi/180
         
         V = np.linspace(0,V_max,5000)
         if opt == 1: # FAR 25 (lecture slides, unsure if correctly used)
             n_pos,n_neg = FAR25_gust_eqn(CL_alpha,U_de,W,S_ref,rho,V)
-            #n_pos = 1+K*CL_alpha*U_de*V*ftpsectoknot/(498*W/S_ref)
-            #n_neg = 1-K*CL_alpha*U_de*V*ftpsectoknot/(498*W/S_ref)
         elif opt ==2: # Raymer Equation
-            mu = 2*(W/S_ref)/(rho_c*c_*g*CL_alpha/degreetorad)
+            mu = 2*(W/S_ref)/(rho*c_*g*CL_alpha)
             K = 0.88*mu/(5.3+mu)
-            n_pos = 1+rho*K*U_de*V*CL_alpha/degreetorad/(2*W/S_ref)
-            n_neg = 1-rho*K*U_de*V*CL_alpha/degreetorad/(2*W/S_ref)
+            n_pos = 1+rho*K*U_de*V*CL_alpha/(2*W/S_ref)
+            n_neg = 1-rho*K*U_de*V*CL_alpha/(2*W/S_ref)
         return V,n_pos,n_neg
 
     def find_intercept(x1, y1, x2, y2):
@@ -82,19 +78,17 @@ def vn_diagram(W_min,W_max,rho_SL,rho_c,S_ref,CL_max,CL_min,CL_alpha,V_cruise,c_
 
     def FAR25_gust_eqn(CL_alpha,U_de,W,S_ref,rho,V):
         g = 32.1740 # ft/s^2
-        degreetorad = np.pi/180
-        
-        mu = 2*(W/S_ref)/(rho*c_*g*CL_alpha/degreetorad)
+
+        mu = 2*(W/S_ref)/(rho*c_*g*CL_alpha)
         K = 0.88*mu/(5.3+mu)
-        n_pos = 1+K*CL_alpha/degreetorad*U_de*V*ftpsectoknot/(498*W/S_ref)
-        n_neg = 1-K*CL_alpha/degreetorad*U_de*V*ftpsectoknot/(498*W/S_ref)
+        n_pos = 1+K*CL_alpha*U_de*V*ftpsectoknot/(498*W/S_ref)
+        n_neg = 1-K*CL_alpha*U_de*V*ftpsectoknot/(498*W/S_ref)
         return n_pos,n_neg
         
     # V-N Diagram
     weights = [W_min, W_max]
     g = 32.1740 # ft/s^2
     ftpsectoknot = 1/1.688 # knots/ft-s^-1
-    degreetorad = np.pi/180
     nmin = -1 # FAR requirement
     conditions = ["minimum","maximum"]
     font = 18
@@ -103,11 +97,11 @@ def vn_diagram(W_min,W_max,rho_SL,rho_c,S_ref,CL_max,CL_min,CL_alpha,V_cruise,c_
     for W,condition in zip(weights,conditions):
         V_pos = np.linspace(0,1000,5000)
         V_neg = V_pos.copy()
-        n_pos = rho_SL*V_pos**2*CL_max/(2*W/S_ref)
-        n_neg = rho_SL*(-V_neg)**2*CL_min/(2*W/S_ref)
+        n_pos = rho_SL*(V_pos)**2*CL_max/(2*W/S_ref)
+        n_neg = rho_SL*(V_neg)**2*CL_min/(2*W/S_ref)
 
-        Vs1 = np.sqrt(2*W/(rho_SL*S_ref*CL_max)) # stall speed at 1g
-        Vs_1 = np.sqrt(-2*W/(rho_SL*S_ref*CL_min)) # stall speed at -1g
+        Vs1 = np.sqrt(2*(W/S_ref)/(rho_SL*CL_max)) # stall speed at 1g
+        Vs_1 = np.sqrt(-2*(W/S_ref)/(rho_SL*CL_min)) # stall speed at -1g
         Vc = V_cruise*sigma # factor to convert from true airspeed (TAS) to equivalent airspeed (EAS)
         Vd = 1.25*Vc # dive speed
 
@@ -161,18 +155,15 @@ def vn_diagram(W_min,W_max,rho_SL,rho_c,S_ref,CL_max,CL_min,CL_alpha,V_cruise,c_
         Ue_cruise,h_cruise = create_gust_velocities_FAR23(25,50,lowerlimit,upperlimit,scale)
         Ue_rough,h_rough = create_gust_velocities_FAR23(38,66,lowerlimit,upperlimit,scale)'''
         
-        # FAR 25 requirements
-        scale = 1000
-        U_de1,h_de1 = create_linear_curve(20.86,44,50,15)
-        U_de2,h_de2 = create_linear_curve(44,56,15,0)
-        U_de_FAR25 = np.concatenate((U_de1,U_de2))
-        h_de_FAR25 = np.concatenate((h_de1,h_de2))*scale
-        U_de_cruise = U_de_FAR25.copy() # same for Vc and Vb 
-        U_de_dive = U_de_FAR25*0.5
-        
-        # for cruise only right now
-        U_de_c = np.interp(h_c,h_de_FAR25,U_de_cruise)
-        U_de_d = np.interp(h_c,h_de_FAR25,U_de_dive)
+        # FAR 25 gust speed requirements
+        if (h_c >= 0) or (h_c < 15000):
+            m = (44-26)/(15000-50000)
+            b = 26-m*50000
+        elif (h_c >= 15000) or (h_c < 50000):
+            m = (56-44)/(0-15000)
+            b = 44-m*15000
+        U_de_c = m*h_c+b
+        U_de_d = U_de_c*0.5 # FAR25 Gust Dive Speed
         
         # cruise
         nc_pos,nc_neg = FAR25_gust_eqn(CL_alpha,U_de_c,W,S_ref,rho_c,Vc)
@@ -181,9 +172,9 @@ def vn_diagram(W_min,W_max,rho_SL,rho_c,S_ref,CL_max,CL_min,CL_alpha,V_cruise,c_
         nd_pos,nd_neg = FAR25_gust_eqn(CL_alpha,U_de_d,W,S_ref,rho_c,Vd)
 
         # recalculating new bounds for the V-n diagram
-        mu = 2*(W/S_ref)/(rho_c*c_*g*CL_alpha*degreetorad)
+        mu = 2*(W/S_ref)/(rho_c*c_*g*CL_alpha)
         K = 0.88*mu/(5.3+mu)
-        Vb_lim = Vs1*(1+K*U_de_c*(Vc*ftpsectoknot)*CL_alpha*degreetorad/(498*W/S_ref))
+        Vb_lim = Vs1*(1+K*U_de_c*(Vc*ftpsectoknot)*CL_alpha/(498*W/S_ref))
         V_b,n_b_pos,n_b_neg = create_gust_line(CL_alpha,U_de_c,W,S_ref,rho_c,1000,1)
         Vb,nb = find_intercept(V_pos,n_pos,V_b,n_b_pos)
         nb_pos,nb_neg = FAR25_gust_eqn(CL_alpha,U_de_c,W,S_ref,rho_c,Vb)
@@ -240,9 +231,9 @@ def vn_diagram(W_min,W_max,rho_SL,rho_c,S_ref,CL_max,CL_min,CL_alpha,V_cruise,c_
         plt.plot(V_d, n_d, color='blue')
         plt.plot(V_gust_1,n_gust_1, color='gray',linestyle='--')
         plt.plot(V_gust_2,n_gust_2, color='gray',linestyle='--')
-        plt.plot(V_gust_3,n_gust_3, color='gray',linestyle='--',label="{} [ft/s]".format(U_de_c))
+        plt.plot(V_gust_3,n_gust_3, color='gray',linestyle='--',label="{:.2f} [ft/s]".format(U_de_c))
         plt.plot(V_gust_4,n_gust_4, color='gray',linestyle='--')
-        plt.plot(V_gust_5,n_gust_5, color='gray',linestyle='--',label="{} [ft/s]".format(U_de_d))
+        plt.plot(V_gust_5,n_gust_5, color='gray',linestyle='--',label="{:.2f} [ft/s]".format(U_de_d))
         plt.plot(V_gust_6,n_gust_6, color='gray',linestyle='--')
         for i,n in enumerate(V_names):
             if (i%2) == 0:
@@ -250,7 +241,7 @@ def vn_diagram(W_min,W_max,rho_SL,rho_c,S_ref,CL_max,CL_min,CL_alpha,V_cruise,c_
             else:
                 plt.text(V_vals[i],n_vals[i]-0.1,n,fontsize=font)
             plt.scatter(V_vals[i],n_vals[i],color="black")  
-        plt.title("V-n Diagram for {} Weight".format(condition.title()),fontsize=font)
+        plt.title("V-n Diagram for {} Weight at {} [ft]".format(condition.title(),h_c),fontsize=font)
         plt.ylabel("n (load factor)",fontsize=font)
         plt.xlabel("Equivalent Air Speed (EAS) [ft/s]",fontsize=font)
         with warnings.catch_warnings():
@@ -265,44 +256,44 @@ def vn_diagram(W_min,W_max,rho_SL,rho_c,S_ref,CL_max,CL_min,CL_alpha,V_cruise,c_
         plt.grid(True)
         plt.xticks(fontsize=font)
         plt.yticks(fontsize=font)
-        #plt.xlim(0,425)
+        plt.xlim(0,400)
         #plt.ylim(-1.5,3.5)
         plt.savefig("Vn-diagram-figures/"+figname+".png",dpi=100,bbox_inches='tight')
         #plt.show()
         plt.clf()
         print('\n')
-        print("plotted {} weight Vn diagram".format(condition))
+        print("plotted {} weight V-n diagram".format(condition))
         
-        # convert back to TAS and print corresponding load factors
-        print("Vs 1g = {:.2f}, Vs -1g = {:.2f}, Va = {:.2f}, Vb = {:.2f}, Vc = {:.2f}, Vd = {:.2f} [ft/s] [TAS]".format(Vs1/sigma, Vs_1/sigma, Va/sigma, Vb/sigma, Vc/sigma, Vd/sigma))
+        # convert back to EAS and print corresponding load factors
+        print("Vs 1g = {:.2f}, Vs -1g = {:.2f}, Va = {:.2f}, Vb = {:.2f}, Vc = {:.2f}, Vd = {:.2f} [ft/s] [EAS]".format(Vs1, Vs_1, Va, Vb, Vc, Vd))
         print("n lg = {:.2f}, ns -1g = {:.2f}, na = {:.2f}, nb = {:.2f}, nc = {:.2f}, nd {:.2f}".format(1.0, -1.0, na, nb, nc_pos, nd))
         
+        print('\n')
         # WARNINGS
-        if Vb < Vb_lim:
-            print("WARNING V-n Diagram: Vb is too small (Vb = {:.2f} >\= {:.2f})".format(Vb,Vb_lim))
+        '''if Vb < Vb_lim:
+            Vc_need = (Vb/Vs1-1)*(498*W/S_ref)/(K*U_de_c*CL_alpha)/ftpsectoknot
+            print("WARNING V-n Diagram: Vb is too small (Vb = {:.2f} >\= Vs1[1+K*U_c*V_c*CL_alpha/(498*W/S)] = {:.2f} [ft/s] [EAS]), Vc needs to be <= {:.2f} [EAS], {:.2f} [TAS]".format(Vb,Vb_lim,Vc_need,Vc_need/sigma))
         else:
-            print("Vb = {:.2f} [EAS] >= Vs1[1+K*U_c*V_c*CL_alpha/(498*W/S)] = {:.2f} [ft/s] [EAS]".format(Vb,Vb_lim))
+            print("REQUIREMENT SATISFIED: Vb = {:.2f} >= Vs1[1+K*U_c*V_c*CL_alpha/(498*W/S)] = {:.2f} [EAS]".format(Vb,Vb_lim))'''
         if Vc < Vb:
-            print("WARNING V-n Diagram: Vc >\= Vb, Vc = {:.2f}, Vb = {:.2f}".format(Vc,Vb))
+            print("WARNING V-n Diagram: Vc is too small and/or CL_alpha is to large (Vc = {:.2f} >\= Vb = {:.2f} [ft/s] [EAS], CL_alpha = {:.2f} [rad^-1])".format(Vc,Vb,CL_alpha))
         if Va > Vd:
-            print("WARNING V-n Diagram: Va <\= Vd, Va = {:.2f}, Vd  = {:.2f}".format(Va,Vd))
+            print("WARNING V-n Diagram: Va is too large (Va = {:.2f} <\= Vd  = {:.2f} [ft/s] [EAS])".format(Va,Vd))
         if Vc < Vs_1:
-            print("WARNING V-n Diagram: Vc >\= Vs-1, Vc = {:.2f}, Vs-1 = {:.2f}".format(Vc,Vs_1))
-            
-        
+            print("WARNING V-n Diagram: Vc is too small and/or CL_min is not negative enough (Vc = {:.2f} >\= Vs-1 = {:.2f} [ft/s] [EAS], CL_min = {:.2f}) ".format(Vc,Vs_1,CL_min))
     
 
-'''# Example
-W_min = 54000 # [lbf] or [slug-ft/s^2]
-W_max = 64000
+# Example
+W_min = 52262 # [lbf] or [slug-ft/s^2]
+W_max = 64482
 rho_SL = 0.00237 # [slugs/ft^3] at sea level
 rho_c = 9.61*10**-4 # [slugs/ft^2] at cruise altitude (28000 ft)
-#rho_c = 0.001267 # 20000 ft
+#rho_c = 0.001267 # at 20000 ft
 S_ref = 730 # [ft^2]
 CL_max = 1.55 # for cruise
-CL_min = -0.9 # for cruise
-CL_alpha = 0.136/2 # [degree^-1]for cruise (approximate)
+CL_min = -0.93 # for cruise
+CL_alpha = 5.91 # [rad^-1] for cruise
 V_cruise = 464.148 # [ft/s] cruise speed (275 knots)
-c_ = 12.576 # [ft] mean chord 
-h_c = 28000 # [ft] cruise altitude 
-vn_diagram(W_min,W_max,rho_SL,rho_c,S_ref,CL_max,CL_min,CL_alpha,V_cruise,c_,h_c)'''
+c_ = 8.396 # [ft] mean chord 
+h_c = 28000 # [ft] cruise altitude (28000 ft)
+vn_diagram(W_min,W_max,rho_SL,rho_c,S_ref,CL_max,CL_min,CL_alpha,V_cruise,c_,h_c)
